@@ -22,6 +22,9 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminProjectsRouteImport } from './routes/admin/projects'
+import { Route as AdminMessagesRouteRouteImport } from './routes/admin/messages/route'
+import { Route as AdminMessagesSentRouteImport } from './routes/admin/messages/sent'
+import { Route as AdminMessagesInboxRouteImport } from './routes/admin/messages/inbox'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
@@ -88,6 +91,21 @@ const AdminProjectsRoute = AdminProjectsRouteImport.update({
   path: '/projects',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminMessagesRouteRoute = AdminMessagesRouteRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminMessagesSentRoute = AdminMessagesSentRouteImport.update({
+  id: '/sent',
+  path: '/sent',
+  getParentRoute: () => AdminMessagesRouteRoute,
+} as any)
+const AdminMessagesInboxRoute = AdminMessagesInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => AdminMessagesRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -99,10 +117,13 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRoute
   '/services': typeof ServicesRoute
+  '/admin/messages': typeof AdminMessagesRouteRouteWithChildren
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/messages/inbox': typeof AdminMessagesInboxRoute
+  '/admin/messages/sent': typeof AdminMessagesSentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -113,10 +134,13 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRoute
   '/services': typeof ServicesRoute
+  '/admin/messages': typeof AdminMessagesRouteRouteWithChildren
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/messages/inbox': typeof AdminMessagesInboxRoute
+  '/admin/messages/sent': typeof AdminMessagesSentRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -129,10 +153,13 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRoute
   '/services': typeof ServicesRoute
+  '/admin/messages': typeof AdminMessagesRouteRouteWithChildren
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/messages/inbox': typeof AdminMessagesInboxRoute
+  '/admin/messages/sent': typeof AdminMessagesSentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -146,10 +173,13 @@ export interface FileRouteTypes {
     | '/profile'
     | '/projects'
     | '/services'
+    | '/admin/messages'
     | '/admin/projects'
     | '/admin/settings'
     | '/admin/users'
     | '/admin/'
+    | '/admin/messages/inbox'
+    | '/admin/messages/sent'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -160,10 +190,13 @@ export interface FileRouteTypes {
     | '/profile'
     | '/projects'
     | '/services'
+    | '/admin/messages'
     | '/admin/projects'
     | '/admin/settings'
     | '/admin/users'
     | '/admin'
+    | '/admin/messages/inbox'
+    | '/admin/messages/sent'
   id:
     | '__root__'
     | '/'
@@ -175,10 +208,13 @@ export interface FileRouteTypes {
     | '/profile'
     | '/projects'
     | '/services'
+    | '/admin/messages'
     | '/admin/projects'
     | '/admin/settings'
     | '/admin/users'
     | '/admin/'
+    | '/admin/messages/inbox'
+    | '/admin/messages/sent'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -286,10 +322,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProjectsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/messages': {
+      id: '/admin/messages'
+      path: '/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AdminMessagesRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/messages/sent': {
+      id: '/admin/messages/sent'
+      path: '/sent'
+      fullPath: '/admin/messages/sent'
+      preLoaderRoute: typeof AdminMessagesSentRouteImport
+      parentRoute: typeof AdminMessagesRouteRoute
+    }
+    '/admin/messages/inbox': {
+      id: '/admin/messages/inbox'
+      path: '/inbox'
+      fullPath: '/admin/messages/inbox'
+      preLoaderRoute: typeof AdminMessagesInboxRouteImport
+      parentRoute: typeof AdminMessagesRouteRoute
+    }
   }
 }
 
+interface AdminMessagesRouteRouteChildren {
+  AdminMessagesInboxRoute: typeof AdminMessagesInboxRoute
+  AdminMessagesSentRoute: typeof AdminMessagesSentRoute
+}
+
+const AdminMessagesRouteRouteChildren: AdminMessagesRouteRouteChildren = {
+  AdminMessagesInboxRoute: AdminMessagesInboxRoute,
+  AdminMessagesSentRoute: AdminMessagesSentRoute,
+}
+
+const AdminMessagesRouteRouteWithChildren =
+  AdminMessagesRouteRoute._addFileChildren(AdminMessagesRouteRouteChildren)
+
 interface AdminRouteRouteChildren {
+  AdminMessagesRouteRoute: typeof AdminMessagesRouteRouteWithChildren
   AdminProjectsRoute: typeof AdminProjectsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -297,6 +368,7 @@ interface AdminRouteRouteChildren {
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminMessagesRouteRoute: AdminMessagesRouteRouteWithChildren,
   AdminProjectsRoute: AdminProjectsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminUsersRoute: AdminUsersRoute,

@@ -32,10 +32,10 @@ const VALUES = [
 ];
 
 const TEAM = [
-  { name: "Anya Volkov", role: "Co-founder · CEO" },
-  { name: "Marco Reyes", role: "Co-founder · CTO" },
-  { name: "Lena Park", role: "Head of Design" },
-  { name: "Idris Khan", role: "Head of Engineering" },
+  { name: "Anya Volkov", role: "Co-founder · CEO", img: "/team/anya.png" },
+  { name: "Marco Reyes", role: "Co-founder · CTO", img: "/team/marco.png" },
+  { name: "Lena Park", role: "Head of Design", img: "/team/lena.png" },
+  { name: "Idris Khan", role: "Head of Engineering", img: "/team/idris.png" },
 ];
 
 function AboutPage() {
@@ -117,15 +117,18 @@ function AboutPage() {
       <Section>
         <SectionHeader eyebrow="Leadership" title={<>Meet the <span className="text-gradient">team</span></>} />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {TEAM.map((m, i) => (
-            <GlassCard key={m.name} className="!p-0 overflow-hidden">
-              <div className="aspect-square w-full" style={{
-                background: `linear-gradient(135deg, oklch(0.${30+i*5} 0.2 ${200 + i*30}), oklch(0.${50-i*3} 0.18 ${280 + i*15}))`
-              }}>
-                <div className="h-full w-full bg-grid opacity-30" />
+          {TEAM.map((m) => (
+            <GlassCard key={m.name} className="!p-0 overflow-hidden group">
+              <div className="aspect-square w-full overflow-hidden relative">
+                <img 
+                  src={m.img} 
+                  alt={m.name} 
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               </div>
               <div className="p-5">
-                <h4 className="font-semibold">{m.name}</h4>
+                <h4 className="font-semibold text-lg">{m.name}</h4>
                 <p className="text-sm text-muted-foreground">{m.role}</p>
               </div>
             </GlassCard>

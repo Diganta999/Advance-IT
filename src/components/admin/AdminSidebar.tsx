@@ -1,5 +1,5 @@
 import { Link, useRouterState } from '@tanstack/react-router';
-import { LayoutDashboard, Users, Settings, LogOut, Code, FileText } from 'lucide-react';
+import { LayoutDashboard, Users, Settings, LogOut, Code, FileText, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/context/SettingsContext';
@@ -15,6 +15,7 @@ export function AdminSidebar() {
     { name: 'Users', path: '/admin/users', icon: Users },
     { name: 'Projects', path: '/admin/projects', icon: Code },
     { name: 'Content', path: '/admin/content', icon: FileText },
+    { name: 'Messages', path: '/admin/messages/inbox', icon: MessageSquare },
     { name: 'Settings', path: '/admin/settings', icon: Settings },
   ];
 

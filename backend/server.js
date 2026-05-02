@@ -1,17 +1,23 @@
 import express from 'express';
 import mongoose from 'mongoose';
+// Server restart triggered by settings update
 import cors from 'cors';
 import dotenv from 'dotenv';
 import dns from 'dns';
 import projectRoutes from './routes/projectRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
+import messageRoutes from './routes/messageRoutes.js';
 import User from './models/User.js';
 
 // Fix for Windows Node.js failing to resolve MongoDB Atlas SRV records
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 dotenv.config();
+console.log('--- Environment Check ---');
+console.log('EMAIL_USER:', process.env.EMAIL_USER ? '✅ LOADED' : '❌ NOT LOADED');
+console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? '✅ LOADED' : '❌ NOT LOADED');
+console.log('------------------------');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,15 +35,13 @@ mongoose.connect(MONGODB_URI)
 // Maintenance Mode Middleware
 import Settings from './models/Settings.js';
 app.use(async (req, res, next) => {
-  if (req.path.startsWith('/api/settings') || req.path.startsWith('/api/auth/login')) {
+  if (req.path.startsWith('/api/settings') || req.path.startsWith('/api/auth/login') || (req.path === '/api/messages' && req.method === 'POST')) {
     return next();
   }
   
   try {
     const settings = await Settings.findOne();
     if (settings?.maintenanceMode && !req.path.startsWith('/api/auth')) {
-      // Check if user is admin (this is a bit complex without full auth here, 
-      // but let's at least protect public routes)
       if (!req.headers.authorization) {
         return res.status(503).json({ 
           maintenance: true, 
@@ -55,6 +59,7 @@ app.use(async (req, res, next) => {
 app.use('/api/projects', projectRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/messages', messageRoutes);
 
 // Seed default admin if not exists
 mongoose.connection.once('open', async () => {
