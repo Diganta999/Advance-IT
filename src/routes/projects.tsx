@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Github } from "lucide-react";
 import { Section, SectionHeader, GlassCard } from "@/components/site/Section";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/projects")({
   head: () => ({
@@ -31,7 +32,23 @@ const PROJECTS = [
 
 function ProjectsPage() {
   const [active, setActive] = useState<typeof CATEGORIES[number]>("All");
-  const filtered = active === "All" ? PROJECTS : PROJECTS.filter((p) => p.cat === active);
+  
+  const { data: dynamicProjects = [] } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/projects');
+        if (!res.ok) throw new Error('Failed to fetch');
+        return res.json();
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
+  });
+
+  const allProjects = [...PROJECTS, ...dynamicProjects];
+  const filtered = active === "All" ? allProjects : allProjects.filter((p) => p.cat === active);
 
   return (
     <>
@@ -58,9 +75,9 @@ function ProjectsPage() {
 
         <div className="columns-1 gap-5 sm:columns-2 lg:columns-3">
           <AnimatePresence mode="popLayout">
-            {filtered.map((p, i) => (
+            {filtered.map((p: any, i: number) => (
               <motion.div
-                key={p.name}
+                key={p._id || p.name}
                 layout
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}

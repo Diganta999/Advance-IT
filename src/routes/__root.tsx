@@ -3,6 +3,7 @@ import appCss from "../styles.css?url";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { AmbientBackground } from "@/components/site/Background";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -62,15 +63,22 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
+
 function RootComponent() {
   return (
-    <div className="relative min-h-screen">
-      <AmbientBackground />
-      <Navbar />
-      <main className="pt-24">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="relative min-h-screen">
+        <AmbientBackground />
+        <Navbar />
+        <main className="pt-24">
+          <Outlet />
+        </main>
+        <Footer />
+        <Toaster position="top-center" theme="dark" />
+      </div>
+    </QueryClientProvider>
   );
 }

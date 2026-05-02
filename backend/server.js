@@ -2,6 +2,11 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import dns from 'dns';
+import projectRoutes from './routes/projectRoutes.js';
+
+// Fix for Windows Node.js failing to resolve MongoDB Atlas SRV records
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 dotenv.config();
 
@@ -19,6 +24,8 @@ mongoose.connect(MONGODB_URI)
   .catch((err) => console.error('❌ MongoDB connection error:', err));
 
 // Routes
+app.use('/api/projects', projectRoutes);
+
 app.get('/api/status', (req, res) => {
   res.json({ status: 'OK', message: 'Backend is running' });
 });
