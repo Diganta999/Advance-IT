@@ -3,21 +3,54 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Plus } from 'lucide-react';
+import { MoreHorizontal, Plus, Loader2 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/admin/users')({
   component: AdminUsersPage,
 });
 
-const usersData = [
-  { id: '1', name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active', date: '2023-10-25' },
-  { id: '2', name: 'Jane Smith', email: 'jane@example.com', role: 'Editor', status: 'Active', date: '2023-10-26' },
-  { id: '3', name: 'Michael Johnson', email: 'michael@example.com', role: 'Viewer', status: 'Inactive', date: '2023-10-27' },
-  { id: '4', name: 'Emily Davis', email: 'emily@example.com', role: 'Viewer', status: 'Active', date: '2023-10-28' },
-  { id: '5', name: 'William Brown', email: 'william@example.com', role: 'Editor', status: 'Active', date: '2023-10-29' },
-];
+interface UserData {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: string;
+  profilePicture?: string;
+}
 
 function AdminUsersPage() {
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user: currentUser } = useAuth();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!currentUser?.token) return;
+      
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/all', {
+          headers: {
+            'Authorization': `Bearer ${currentUser.token}`
+          }
+        });
+        const data = await res.json();
+        
+        if (!res.ok) throw new Error(data.message || 'Failed to fetch users');
+        
+        setUsers(data);
+      } catch (err: any) {
+        toast.error(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [currentUser]);
+
   return (
     <div className="flex flex-col gap-8 animate-fade-up">
       <div className="flex items-center justify-between">
@@ -32,41 +65,56 @@ function AdminUsersPage() {
 
       <Card className="glass">
         <CardHeader>
-          <CardTitle>All Users</CardTitle>
+          <CardTitle>All Users ({users.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="border-glass-border hover:bg-transparent">
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Joined Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {usersData.map((user) => (
-                <TableRow key={user.id} className="border-glass-border hover:bg-glass">
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>
-                    <Badge variant={user.status === 'Active' ? 'default' : 'secondary'} className={user.status === 'Active' ? 'bg-primary/20 text-primary border-primary/30' : ''}>
-                      {user.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">{user.date}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
+          {isLoading ? (
+            <div className="flex h-40 items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="border-glass-border hover:bg-transparent">
+                  <TableHead>User</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Joined Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user._id} className="border-glass-border hover:bg-glass">
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-3">
+                        <img 
+                          src={user.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}&backgroundColor=transparent`} 
+                          alt={user.name}
+                          className="h-8 w-8 rounded-full border border-glass-border"
+                        />
+                        {user.name}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize border-primary/30 text-primary bg-primary/10">
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

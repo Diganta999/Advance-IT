@@ -1,8 +1,9 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, Sparkles, User as UserIcon, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -17,6 +18,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
+  const { user } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -72,7 +74,37 @@ export function Navbar() {
           })}
         </div>
 
-        <div className="hidden lg:block">
+        <div className="hidden lg:flex items-center gap-3">
+          {user ? (
+            <div className="flex items-center gap-3">
+              {(user.role === 'admin' || user.role === 'moderator') && (
+                <Link
+                  to="/admin"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-glass-border bg-white/5 transition-all hover:bg-white/10 hover:text-primary"
+                  title="Admin Dashboard"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                </Link>
+              )}
+              <Link
+                to="/profile"
+                className="group relative flex h-10 w-10 overflow-hidden items-center justify-center rounded-full border border-glass-border bg-white/5 transition-all hover:bg-white/10 hover:shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)]"
+              >
+                <img 
+                  src={user.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}&backgroundColor=transparent`} 
+                  alt="Profile" 
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              </Link>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="group relative flex items-center gap-2 rounded-xl border border-glass-border bg-white/5 px-4 py-2.5 text-sm font-semibold text-foreground transition-all hover:bg-white/10"
+            >
+              <UserIcon className="h-4 w-4" /> Sign In
+            </Link>
+          )}
           <Link
             to="/contact"
             className="group relative inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
@@ -116,6 +148,37 @@ export function Navbar() {
                   {item.label}
                 </Link>
               ))}
+              {user ? (
+                <div className="flex flex-col gap-2 mt-2">
+                  {(user.role === 'admin' || user.role === 'moderator') && (
+                    <Link
+                      to="/admin"
+                      className="flex items-center justify-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <Link
+                    to="/profile"
+                    className="flex items-center justify-center gap-2 rounded-lg border border-glass-border bg-white/5 px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-white/10"
+                  >
+                    <img 
+                      src={user.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}&backgroundColor=transparent`} 
+                      alt="Profile" 
+                      className="h-7 w-7 rounded-full bg-white/10 ring-1 ring-white/20"
+                    />
+                    My Profile
+                  </Link>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="mt-2 rounded-lg border border-glass-border bg-white/5 px-3 py-2.5 text-center text-sm font-semibold text-foreground transition-colors hover:bg-white/10"
+                >
+                  Sign In
+                </Link>
+              )}
               <Link
                 to="/contact"
                 className="mt-2 rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-primary-foreground"

@@ -1,5 +1,6 @@
 import express from 'express';
 import Project from '../models/Project.js';
+import { protect, authorizeRoles } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST a new project
-router.post('/', async (req, res) => {
+router.post('/', protect, authorizeRoles('admin', 'moderator'), async (req, res) => {
   const { name, cat, tag, grad, h, img } = req.body;
 
   try {

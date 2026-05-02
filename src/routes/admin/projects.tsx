@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus, Trash2, ExternalLink, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
 
 export const Route = createFileRoute('/admin/projects')({
   component: AdminProjectsPage,
@@ -23,6 +24,7 @@ const GRADIENTS = [
 
 function AdminProjectsPage() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '', cat: 'Web', tag: '', h: 'h-72', grad: GRADIENTS[0].value
   });
@@ -43,7 +45,10 @@ function AdminProjectsPage() {
     mutationFn: async (newProject) => {
       const res = await fetch('http://localhost:5000/api/projects', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.token}`
+        },
         body: JSON.stringify(newProject)
       });
       if (!res.ok) throw new Error('Failed to create');
