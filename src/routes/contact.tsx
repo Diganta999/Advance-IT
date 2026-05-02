@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Mail, MapPin, Phone, MessageCircle, Send, CheckCircle2 } from "lucide-react";
 import { Section, SectionHeader, GlassCard } from "@/components/site/Section";
+import { useSettings } from "@/context/SettingsContext";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -23,6 +24,7 @@ const OFFICES = [
 
 function ContactPage() {
   const [sent, setSent] = useState(false);
+  const { settings } = useSettings();
 
   return (
     <>
@@ -89,7 +91,7 @@ function ContactPage() {
             <GlassCard>
               <Mail className="h-5 w-5 text-accent" />
               <h4 className="mt-4 font-semibold">Email</h4>
-              <p className="text-sm text-muted-foreground">hello@nebulalabs.dev</p>
+              <p className="text-sm text-muted-foreground">{settings?.contactEmail || "hello@nebulalabs.dev"}</p>
             </GlassCard>
             <GlassCard>
               <Phone className="h-5 w-5 text-accent" />

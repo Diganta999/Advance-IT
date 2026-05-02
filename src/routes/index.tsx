@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, Code2, Smartphone, Cloud, Shield, Cpu, Palette, Rocket, Star, CheckCircle2, Quote } from "lucide-react";
 import { Section, SectionHeader, GlassCard } from "@/components/site/Section";
+import { useSettings } from "@/context/SettingsContext";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,6 +47,7 @@ const TESTIMONIALS = [
 ];
 
 function HomePage() {
+  const { settings } = useSettings();
   return (
     <>
       {/* HERO */}
@@ -66,7 +68,7 @@ function HomePage() {
               Software that feels like <span className="text-gradient">the future</span>.
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-balance text-lg text-muted-foreground sm:text-xl">
-              We're a senior engineering studio designing and building category-defining web, mobile, cloud and AI products for ambitious teams.
+              {settings?.siteDescription || "We're a senior engineering studio designing and building category-defining web, mobile, cloud and AI products for ambitious teams."}
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link

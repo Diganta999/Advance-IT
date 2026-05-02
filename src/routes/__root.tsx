@@ -5,6 +5,8 @@ import { Footer } from "@/components/site/Footer";
 import { AmbientBackground } from "@/components/site/Background";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/AuthContext";
+import { SettingsProvider } from "@/context/SettingsContext";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 function NotFoundComponent() {
   return (
@@ -64,24 +66,24 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
 const queryClient = new QueryClient();
 
 function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <div className="relative min-h-screen">
-        <AmbientBackground />
-        <Navbar />
-        <main className="pt-24">
-          <Outlet />
-        </main>
-        <Footer />
-        <Toaster position="top-center" theme="dark" />
-        </div>
-      </AuthProvider>
+      <SettingsProvider>
+        <AuthProvider>
+          <div className="relative min-h-screen">
+          <AmbientBackground />
+          <Navbar />
+          <main className="pt-24">
+            <Outlet />
+          </main>
+          <Footer />
+          <Toaster position="top-center" theme="dark" />
+          </div>
+        </AuthProvider>
+      </SettingsProvider>
     </QueryClientProvider>
   );
 }

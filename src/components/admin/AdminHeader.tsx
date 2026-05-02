@@ -2,8 +2,10 @@ import { Bell, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/context/AuthContext';
 
 export function AdminHeader() {
+  const { user } = useAuth();
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-glass-border bg-background/50 px-6 backdrop-blur-xl">
       <div className="flex flex-1 items-center gap-4">
@@ -26,8 +28,8 @@ export function AdminHeader() {
         <div className="h-8 w-px bg-glass-border" />
         
         <Avatar className="h-9 w-9 border border-glass-border cursor-pointer transition-transform hover:scale-105">
-          <AvatarImage src="https://github.com/shadcn.png" alt="@admin" />
-          <AvatarFallback>AD</AvatarFallback>
+          <AvatarImage src={user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}&backgroundColor=transparent`} alt={user?.name} />
+          <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
         </Avatar>
       </div>
     </header>

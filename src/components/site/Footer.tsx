@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Github, Linkedin, Twitter, Sparkles, Mail } from "lucide-react";
+import { Github, Linkedin, Twitter, Sparkles, Mail, Instagram } from "lucide-react";
+import { useSettings } from "@/context/SettingsContext";
 
 const COLS = [
   {
@@ -33,6 +34,20 @@ const COLS = [
 ] as const;
 
 export function Footer() {
+  const { settings } = useSettings();
+  
+  const siteName = settings?.siteName || "NebulaLabs";
+  const words = siteName.split(' ');
+  const lastWord = words.pop();
+  const firstPart = words.join(' ');
+  
+  const socialPlatforms = [
+    { Icon: Twitter, url: settings?.socialLinks?.twitter },
+    { Icon: Github, url: settings?.socialLinks?.github },
+    { Icon: Linkedin, url: settings?.socialLinks?.linkedin },
+    { Icon: Instagram, url: settings?.socialLinks?.instagram },
+  ].filter(p => p.url);
+
   return (
     <footer className="relative mt-32 px-3 pb-6 sm:px-6">
       <div className="glass mx-auto max-w-7xl rounded-3xl p-8 sm:p-12">
@@ -42,10 +57,12 @@ export function Footer() {
               <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
                 <Sparkles className="h-4 w-4 text-primary-foreground" />
               </span>
-              <span className="text-lg font-semibold">Nebula<span className="text-gradient">Labs</span></span>
+              <span className="text-lg font-semibold">
+                {firstPart} {firstPart && ' '}<span className="text-gradient">{lastWord}</span>
+              </span>
             </Link>
             <p className="mt-4 max-w-sm text-sm text-muted-foreground">
-              Engineering teams who ship pixel-perfect software, scalable cloud infrastructure, and AI products for category-defining companies.
+              {settings?.siteDescription || "Engineering teams who ship pixel-perfect software, scalable cloud infrastructure, and AI products for category-defining companies."}
             </p>
 
             <form
@@ -86,8 +103,14 @@ export function Footer() {
           <div className="lg:col-span-2">
             <h4 className="text-sm font-semibold tracking-wide">Follow</h4>
             <div className="mt-4 flex gap-2">
-              {[Twitter, Linkedin, Github].map((Icon, i) => (
-                <a key={i} href="#" className="glass flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-white/10">
+              {socialPlatforms.map(({ Icon, url }, i) => (
+                <a 
+                  key={i} 
+                  href={url} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="glass flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
+                >
                   <Icon className="h-4 w-4" />
                 </a>
               ))}
@@ -96,7 +119,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} NebulaLabs Inc. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {siteName} Inc. All rights reserved.</p>
           <div className="flex gap-5">
             <a href="#" className="hover:text-foreground">Privacy</a>
             <a href="#" className="hover:text-foreground">Terms</a>

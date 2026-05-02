@@ -24,12 +24,15 @@ router.get('/', async (req, res) => {
 // @access  Private (Admin)
 router.put('/', protect, authorizeRoles('admin'), async (req, res) => {
   try {
+    const { _id, createdAt, updatedAt, __v, ...updateData } = req.body;
+    
     let settings = await Settings.findOne();
     if (!settings) {
-      settings = new Settings(req.body);
+      settings = new Settings(updateData);
     } else {
-      Object.assign(settings, req.body);
+      Object.assign(settings, updateData);
     }
+    
     await settings.save();
     res.json(settings);
   } catch (error) {

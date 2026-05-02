@@ -2,10 +2,13 @@ import { Link, useRouterState } from '@tanstack/react-router';
 import { LayoutDashboard, Users, Settings, LogOut, Code, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useSettings } from '@/context/SettingsContext';
 
 export function AdminSidebar() {
   const router = useRouterState();
   const currentPath = router.location.pathname;
+  const { settings } = useSettings();
+  const siteName = settings?.siteName || "NebulaLabs";
 
   const navItems = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
@@ -19,10 +22,12 @@ export function AdminSidebar() {
     <div className="flex h-full w-64 flex-col border-r border-glass-border bg-background/50 backdrop-blur-xl">
       <div className="flex h-16 items-center px-6">
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <span className="font-bold">A</span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+            <span className="font-bold">{siteName.charAt(0)}</span>
           </div>
-          <span className="text-xl font-bold tracking-tight text-gradient">Admin</span>
+          <span className="text-xl font-bold tracking-tight text-gradient truncate max-w-[120px]">
+            {siteName}
+          </span>
         </Link>
       </div>
 

@@ -4,6 +4,7 @@ import { Menu, X, Sparkles, User as UserIcon, LayoutDashboard } from "lucide-rea
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import { useSettings } from "@/context/SettingsContext";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -19,6 +20,12 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   const { user } = useAuth();
+  const { settings } = useSettings();
+  
+  const siteName = settings?.siteName || "NebulaLabs";
+  const words = siteName.split(' ');
+  const lastWord = words.pop();
+  const firstPart = words.join(' ');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -44,7 +51,7 @@ export function Navbar() {
             <span className="absolute inset-0 rounded-xl opacity-50 blur-md" style={{ background: "var(--gradient-primary)" }} />
           </span>
           <span className="text-lg font-semibold tracking-tight">
-            Nebula<span className="text-gradient">Labs</span>
+            {firstPart} {firstPart && ' '}<span className="text-gradient">{lastWord}</span>
           </span>
         </Link>
 

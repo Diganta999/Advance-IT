@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Award, Target, Heart, Globe2 } from "lucide-react";
 import { Section, SectionHeader, GlassCard } from "@/components/site/Section";
+import { useSettings } from "@/context/SettingsContext";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -38,13 +39,15 @@ const TEAM = [
 ];
 
 function AboutPage() {
+  const { settings } = useSettings();
+  const siteName = settings?.siteName || "NebulaLabs";
   return (
     <>
       <Section className="!pt-10">
         <SectionHeader
           eyebrow="About us"
           title={<>A studio of <span className="text-gradient">senior makers</span></>}
-          description="We started NebulaLabs in 2018 with one belief: small teams of senior people ship better software than large teams of anyone else."
+          description={`We started ${siteName} in 2018 with one belief: small teams of senior people ship better software than large teams of anyone else.`}
         />
       </Section>
 

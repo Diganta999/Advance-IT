@@ -26,6 +26,31 @@ mongoose.connect(MONGODB_URI)
   .then(() => console.log('✅ MongoDB connected successfully'))
   .catch((err) => console.error('❌ MongoDB connection error:', err));
 
+// Maintenance Mode Middleware
+import Settings from './models/Settings.js';
+app.use(async (req, res, next) => {
+  if (req.path.startsWith('/api/settings') || req.path.startsWith('/api/auth/login')) {
+    return next();
+  }
+  
+  try {
+    const settings = await Settings.findOne();
+    if (settings?.maintenanceMode && !req.path.startsWith('/api/auth')) {
+      // Check if user is admin (this is a bit complex without full auth here, 
+      // but let's at least protect public routes)
+      if (!req.headers.authorization) {
+        return res.status(503).json({ 
+          maintenance: true, 
+          message: 'Site is currently under maintenance. Please try again later.' 
+        });
+      }
+    }
+    next();
+  } catch (error) {
+    next();
+  }
+});
+
 // Routes
 app.use('/api/projects', projectRoutes);
 app.use('/api/auth', authRoutes);
