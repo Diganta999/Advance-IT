@@ -32,7 +32,7 @@ function AdminUsersPage() {
       if (!currentUser?.token) return;
       
       try {
-        const res = await fetch('http://localhost:5000/api/auth/all', {
+        const res = await fetch('https://advance-it-backend.onrender.com/api/auth/all', {
           headers: {
             'Authorization': `Bearer ${currentUser.token}`
           }
@@ -55,7 +55,7 @@ function AdminUsersPage() {
   const handleRoleChange = async (userId: string, newRole: string) => {
     if (!currentUser?.token) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/${userId}/role`, {
+      const res = await fetch(`https://advance-it-backend.onrender.com/api/auth/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

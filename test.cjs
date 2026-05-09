@@ -1,10 +1,10 @@
 
 async function test() {
-  const content = await fetch("http://localhost:5000/api/content").then(r => r.json());
+  const content = await fetch("https://advance-it-backend.onrender.com/api/content").then(r => r.json());
   console.log("Original services len:", content.services.length);
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await fetch("https://advance-it-backend.onrender.com/api/auth/login", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({email: "admin@advanceit.com", password: "admin123"})
@@ -12,7 +12,7 @@ async function test() {
     const login = await res.json();
     console.log("Login success:", !!login.token);
 
-    const updateRes = await fetch("http://localhost:5000/api/content", {
+    const updateRes = await fetch("https://advance-it-backend.onrender.com/api/content", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -27,7 +27,7 @@ async function test() {
     console.log("Updated services len:", updateData.services?.length);
 
     // Verify
-    const verify = await fetch("http://localhost:5000/api/content").then(r => r.json());
+    const verify = await fetch("https://advance-it-backend.onrender.com/api/content").then(r => r.json());
     console.log("Verified services len:", verify.services?.length);
   } catch(e) {
     console.error(e);

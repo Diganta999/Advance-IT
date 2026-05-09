@@ -2,7 +2,7 @@
 const http = require("http");
 
 async function test() {
-  const content = await fetch("http://localhost:5000/api/content").then(r => r.json());
+  const content = await fetch("https://advance-it-backend.onrender.com/api/content").then(r => r.json());
   console.log("Original services len:", content.services.length);
 
   // login to get token

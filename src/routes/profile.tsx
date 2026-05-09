@@ -106,7 +106,7 @@ function ProfilePage() {
     if (!user.token) return;
     setIsSaving(true);
     try {
-      const res = await fetch('http://localhost:5000/api/auth/profile', {
+      const res = await fetch('https://advance-it-backend.onrender.com/api/auth/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

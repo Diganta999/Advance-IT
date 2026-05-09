@@ -36,7 +36,7 @@ export function AdminSidebar() {
     const fetchUnreadCount = async () => {
       try {
         if (!user?.token) return;
-        const response = await fetch('http://localhost:5000/api/messages/unread-count', {
+        const response = await fetch('https://advance-it-backend.onrender.com/api/messages/unread-count', {
           headers: {
             Authorization: `Bearer ${user.token}`
           }

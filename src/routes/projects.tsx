@@ -37,7 +37,7 @@ function ProjectsPage() {
     queryKey: ['projects'],
     queryFn: async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/projects');
+        const res = await fetch('https://advance-it-backend.onrender.com/api/projects');
         if (!res.ok) throw new Error('Failed to fetch');
         return res.json();
       } catch (error) {

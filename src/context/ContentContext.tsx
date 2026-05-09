@@ -32,7 +32,7 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
 
   const fetchContent = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/content');
+      const res = await fetch('https://advance-it-backend.onrender.com/api/content');
       const data = await res.json();
       if (res.ok) setContent(data);
     } catch (error) {

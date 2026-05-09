@@ -32,7 +32,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/settings');
+      const res = await fetch('https://advance-it-backend.onrender.com/api/settings');
       const data = await res.json();
       if (res.ok) {
         setSettings(data);

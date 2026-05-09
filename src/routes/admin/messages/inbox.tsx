@@ -57,7 +57,7 @@ function InboxPage() {
   const fetchMessages = async () => {
     if (!user?.token) return;
     try {
-      const res = await fetch('http://localhost:5000/api/messages/inbox', {
+      const res = await fetch('https://advance-it-backend.onrender.com/api/messages/inbox', {
         headers: { 'Authorization': `Bearer ${user.token}` }
       });
       const data = await res.json();
@@ -77,7 +77,7 @@ function InboxPage() {
   const markAsRead = async (id: string) => {
     if (!user?.token) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/messages/${id}`, {
+      const res = await fetch(`https://advance-it-backend.onrender.com/api/messages/${id}`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ function InboxPage() {
 
     setIsReplying(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/messages/${id}/reply`, {
+      const res = await fetch(`https://advance-it-backend.onrender.com/api/messages/${id}/reply`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ function InboxPage() {
     if (!user?.token) return;
     setDeletingId(id);
     try {
-      const res = await fetch(`http://localhost:5000/api/messages/${id}`, {
+      const res = await fetch(`https://advance-it-backend.onrender.com/api/messages/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${user.token}` }
       });

@@ -35,7 +35,7 @@ function AdminProjectsPage() {
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:5000/api/projects');
+      const res = await fetch('https://advance-it-backend.onrender.com/api/projects');
       if (!res.ok) throw new Error('Failed to fetch');
       return res.json();
     }
@@ -43,7 +43,7 @@ function AdminProjectsPage() {
 
   const createProject = useMutation({
     mutationFn: async (newProject) => {
-      const res = await fetch('http://localhost:5000/api/projects', {
+      const res = await fetch('https://advance-it-backend.onrender.com/api/projects', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

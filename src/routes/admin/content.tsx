@@ -54,7 +54,7 @@ function AdminContentPage() {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/content');
+        const res = await fetch('https://advance-it-backend.onrender.com/api/content');
         const data = await res.json();
         if (res.ok) setContent(data);
       } catch (err) {
@@ -71,7 +71,7 @@ function AdminContentPage() {
     setIsSaving(true);
     try {
       console.log('Saving content:', JSON.stringify(content, null, 2));
-      const res = await fetch('http://localhost:5000/api/content', {
+      const res = await fetch('https://advance-it-backend.onrender.com/api/content', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ function AdminContentPage() {
     });
 
     try {
-      const res = await fetch(`http://localhost:5000/api/content/service/${i}`, {
+      const res = await fetch(`https://advance-it-backend.onrender.com/api/content/service/${i}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${user.token}` },
       });
@@ -159,7 +159,7 @@ function AdminContentPage() {
     });
 
     try {
-      const res = await fetch(`http://localhost:5000/api/content/team/${i}`, {
+      const res = await fetch(`https://advance-it-backend.onrender.com/api/content/team/${i}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${user.token}` },
       });
@@ -196,7 +196,7 @@ function AdminContentPage() {
     });
 
     try {
-      const res = await fetch(`http://localhost:5000/api/content/stat/${i}`, {
+      const res = await fetch(`https://advance-it-backend.onrender.com/api/content/stat/${i}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${user.token}` },
       });

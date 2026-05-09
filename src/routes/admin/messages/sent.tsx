@@ -38,7 +38,7 @@ function SentPage() {
     const fetchSent = async () => {
       if (!user?.token) return;
       try {
-        const res = await fetch('http://localhost:5000/api/messages/sent', {
+        const res = await fetch('https://advance-it-backend.onrender.com/api/messages/sent', {
           headers: { 'Authorization': `Bearer ${user.token}` }
         });
         const data = await res.json();
