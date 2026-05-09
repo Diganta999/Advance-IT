@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Plus, Loader2 } from 'lucide-react';
+import { MoreHorizontal, Plus, Loader2, ShieldAlert, UserIcon, Crown } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -50,6 +51,27 @@ function AdminUsersPage() {
 
     fetchUsers();
   }, [currentUser]);
+
+  const handleRoleChange = async (userId: string, newRole: string) => {
+    if (!currentUser?.token) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/auth/${userId}/role`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`
+        },
+        body: JSON.stringify({ role: newRole })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to update role');
+
+      setUsers(users.map(u => u._id === userId ? { ...u, role: newRole } : u));
+      toast.success(`User role updated to ${newRole}`);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-8 animate-fade-up">
@@ -106,9 +128,26 @@ function AdminUsersPage() {
                       {new Date(user.createdAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="glass border-glass-border min-w-[150px]">
+                          <DropdownMenuLabel>Set Role</DropdownMenuLabel>
+                          <DropdownMenuSeparator className="bg-glass-border" />
+                          <DropdownMenuItem className="focus:bg-primary/20 focus:text-primary cursor-pointer" onClick={() => handleRoleChange(user._id, "admin")}>
+                            <Crown className="h-4 w-4 mr-2" /> Admin
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="focus:bg-accent/20 focus:text-accent cursor-pointer" onClick={() => handleRoleChange(user._id, "moderator")}>
+                            <ShieldAlert className="h-4 w-4 mr-2" /> Moderator
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="focus:bg-white/10 cursor-pointer" onClick={() => handleRoleChange(user._id, "user")}>
+                            <UserIcon className="h-4 w-4 mr-2" /> User
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))}

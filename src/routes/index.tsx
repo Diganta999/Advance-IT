@@ -1,8 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, Code2, Smartphone, Cloud, Shield, Cpu, Palette, Rocket, Star, CheckCircle2, Quote } from "lucide-react";
+import { ArrowRight, Code2, Smartphone, Cloud, Shield, Cpu, Palette, Rocket, Star, CheckCircle2, Quote, type LucideIcon } from "lucide-react";
 import { Section, SectionHeader, GlassCard } from "@/components/site/Section";
 import { useSettings } from "@/context/SettingsContext";
+import { useContent } from "@/context/ContentContext";
+
+// Resolve icon name string → Lucide component
+const ICON_MAP: Record<string, LucideIcon> = {
+  Code2, Smartphone, Cloud, Shield, Cpu, Palette, Rocket, Star, CheckCircle2, Quote, ArrowRight,
+};
+const DynIcon = ({ name, className }: { name: string; className?: string }) => {
+  const Icon = ICON_MAP[name] ?? Code2;
+  return <Icon className={className} />;
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -15,22 +25,6 @@ export const Route = createFileRoute("/")({
   }),
   component: HomePage,
 });
-
-const STATS = [
-  { value: "240+", label: "Products shipped" },
-  { value: "98%", label: "Client retention" },
-  { value: "42", label: "Engineers worldwide" },
-  { value: "12", label: "Industry awards" },
-];
-
-const SERVICES = [
-  { icon: Code2, title: "Web Development", desc: "Lightning-fast, type-safe Next.js & TanStack apps engineered to scale." },
-  { icon: Smartphone, title: "Mobile Apps", desc: "Cross-platform iOS & Android experiences with native performance." },
-  { icon: Palette, title: "UI / UX Design", desc: "Design systems and product flows that convert and delight." },
-  { icon: Cloud, title: "Cloud & DevOps", desc: "Resilient cloud infra on AWS, GCP and Cloudflare with full observability." },
-  { icon: Cpu, title: "AI Solutions", desc: "Custom LLM agents, RAG pipelines and ML systems shipped to production." },
-  { icon: Shield, title: "Cyber Security", desc: "Pen-tests, SOC 2 readiness and zero-trust architectures." },
-];
 
 const LOGOS = ["NORTHWIND", "ACME", "PARALLAX", "VERTEX", "OBSIDIAN", "QUANTUM", "HELIOS", "ATLAS"];
 
@@ -48,6 +42,25 @@ const TESTIMONIALS = [
 
 function HomePage() {
   const { settings } = useSettings();
+  const { content } = useContent();
+
+  const hero = content?.hero;
+  const stats = content?.stats?.length ? content.stats : [
+    { value: "240+", label: "Products shipped" },
+    { value: "98%", label: "Client retention" },
+    { value: "42", label: "Engineers worldwide" },
+    { value: "12", label: "Industry awards" },
+  ];
+  
+  // Use dynamic services if available, otherwise use default fallback
+  const services = content?.services?.length ? content.services : [
+    { icon: "Code2", title: "Web Development", description: "Lightning-fast, type-safe Next.js & TanStack apps engineered to scale." },
+    { icon: "Smartphone", title: "Mobile Apps", description: "Cross-platform iOS & Android experiences with native performance." },
+    { icon: "Palette", title: "UI / UX Design", description: "Design systems and product flows that convert and delight." },
+    { icon: "Cloud", title: "Cloud & DevOps", description: "Resilient cloud infra on AWS, GCP and Cloudflare with full observability." },
+    { icon: "Cpu", title: "AI Solutions", description: "Custom LLM agents, RAG pipelines and ML systems shipped to production." },
+    { icon: "Shield", title: "Cyber Security", description: "Pen-tests, SOC 2 readiness and zero-trust architectures." },
+  ];
   return (
     <>
       {/* HERO */}
@@ -62,28 +75,30 @@ function HomePage() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
               </span>
-              Now booking Q3 engagements
+              {hero?.badge || 'Now booking Q3 engagements'}
             </span>
             <h1 className="mt-6 text-balance text-5xl font-semibold leading-[1.05] tracking-tight sm:text-7xl lg:text-8xl">
-              Software that feels like <span className="text-gradient">the future</span>.
+              {hero?.title ? (
+                <>{hero.title.replace(/\.$/, '').split(' ').slice(0, -2).join(' ')} <span className="text-gradient">{hero.title.split(' ').slice(-2).join(' ').replace('.', '')}</span>.</>
+              ) : (
+                <>Software that feels like <span className="text-gradient">the future</span>.</>
+              )}
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-balance text-lg text-muted-foreground sm:text-xl">
-              {settings?.siteDescription || "We're a senior engineering studio designing and building category-defining web, mobile, cloud and AI products for ambitious teams."}
+              {hero?.description || settings?.siteDescription || "We're a senior engineering studio designing and building category-defining web, mobile, cloud and AI products for ambitious teams."}
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                to="/contact"
+              <Link to="/contact"
                 className="group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.03]"
                 style={{ background: "var(--gradient-primary)", boxShadow: "var(--shadow-glow)" }}
               >
-                Start a project
+                {hero?.ctaPrimary || 'Start a project'}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link
-                to="/projects"
+              <Link to="/projects"
                 className="glass inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold transition-colors hover:bg-white/10"
               >
-                See our work
+                {hero?.ctaSecondary || 'See our work'}
               </Link>
             </div>
           </motion.div>
@@ -145,10 +160,10 @@ function HomePage() {
         </div>
       </Section>
 
-      {/* STATS */}
+      {/* STATS — dynamic from Content Manager */}
       <Section className="!py-12">
         <div className="glass grid grid-cols-2 gap-px overflow-hidden rounded-3xl bg-white/5 lg:grid-cols-4">
-          {STATS.map((s) => (
+          {stats.map((s) => (
             <div key={s.label} className="bg-background/40 p-8 text-center backdrop-blur-xl">
               <div className="text-4xl font-semibold text-gradient sm:text-5xl">{s.value}</div>
               <div className="mt-2 text-sm text-muted-foreground">{s.label}</div>
@@ -157,7 +172,7 @@ function HomePage() {
         </div>
       </Section>
 
-      {/* SERVICES */}
+      {/* SERVICES — dynamic from Content Manager */}
       <Section>
         <SectionHeader
           eyebrow="What we do"
@@ -165,7 +180,7 @@ function HomePage() {
           description="From the first wireframe to the millionth user, we own the entire product stack."
         />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {SERVICES.map((s, i) => (
+          {services.map((s, i) => (
             <motion.div
               key={s.title}
               initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
@@ -174,10 +189,10 @@ function HomePage() {
               <GlassCard>
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl"
                   style={{ background: "var(--gradient-primary)" }}>
-                  <s.icon className="h-5 w-5 text-primary-foreground" />
+                  <DynIcon name={s.icon} className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <h3 className="mt-5 text-lg font-semibold">{s.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{s.description}</p>
                 <Link to="/services" className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-accent">
                   Learn more <ArrowRight className="h-3.5 w-3.5" />
                 </Link>

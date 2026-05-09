@@ -22,6 +22,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminProjectsRouteImport } from './routes/admin/projects'
+import { Route as AdminContentRouteImport } from './routes/admin/content'
 import { Route as AdminMessagesRouteRouteImport } from './routes/admin/messages/route'
 import { Route as AdminMessagesSentRouteImport } from './routes/admin/messages/sent'
 import { Route as AdminMessagesInboxRouteImport } from './routes/admin/messages/inbox'
@@ -91,6 +92,11 @@ const AdminProjectsRoute = AdminProjectsRouteImport.update({
   path: '/projects',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminContentRoute = AdminContentRouteImport.update({
+  id: '/content',
+  path: '/content',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminMessagesRouteRoute = AdminMessagesRouteRouteImport.update({
   id: '/messages',
   path: '/messages',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRoute
   '/services': typeof ServicesRoute
   '/admin/messages': typeof AdminMessagesRouteRouteWithChildren
+  '/admin/content': typeof AdminContentRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRoute
   '/services': typeof ServicesRoute
   '/admin/messages': typeof AdminMessagesRouteRouteWithChildren
+  '/admin/content': typeof AdminContentRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRoute
   '/services': typeof ServicesRoute
   '/admin/messages': typeof AdminMessagesRouteRouteWithChildren
+  '/admin/content': typeof AdminContentRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/messages'
+    | '/admin/content'
     | '/admin/projects'
     | '/admin/settings'
     | '/admin/users'
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/messages'
+    | '/admin/content'
     | '/admin/projects'
     | '/admin/settings'
     | '/admin/users'
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/messages'
+    | '/admin/content'
     | '/admin/projects'
     | '/admin/settings'
     | '/admin/users'
@@ -322,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProjectsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/content': {
+      id: '/admin/content'
+      path: '/content'
+      fullPath: '/admin/content'
+      preLoaderRoute: typeof AdminContentRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/messages': {
       id: '/admin/messages'
       path: '/messages'
@@ -361,6 +380,7 @@ const AdminMessagesRouteRouteWithChildren =
 
 interface AdminRouteRouteChildren {
   AdminMessagesRouteRoute: typeof AdminMessagesRouteRouteWithChildren
+  AdminContentRoute: typeof AdminContentRoute
   AdminProjectsRoute: typeof AdminProjectsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -369,6 +389,7 @@ interface AdminRouteRouteChildren {
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminMessagesRouteRoute: AdminMessagesRouteRouteWithChildren,
+  AdminContentRoute: AdminContentRoute,
   AdminProjectsRoute: AdminProjectsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminUsersRoute: AdminUsersRoute,

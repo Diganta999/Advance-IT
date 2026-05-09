@@ -6,6 +6,7 @@ import { AmbientBackground } from "@/components/site/Background";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/AuthContext";
 import { SettingsProvider } from "@/context/SettingsContext";
+import { ContentProvider } from "@/context/ContentContext";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 function NotFoundComponent() {
@@ -72,17 +73,19 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <SettingsProvider>
-        <AuthProvider>
-          <div className="relative min-h-screen">
-          <AmbientBackground />
-          <Navbar />
-          <main className="pt-24">
-            <Outlet />
-          </main>
-          <Footer />
-          <Toaster position="top-center" theme="dark" />
-          </div>
-        </AuthProvider>
+        <ContentProvider>
+          <AuthProvider>
+            <div className="relative min-h-screen">
+            <AmbientBackground />
+            <Navbar />
+            <main className="pt-24">
+              <Outlet />
+            </main>
+            <Footer />
+            <Toaster position="top-center" theme="dark" />
+            </div>
+          </AuthProvider>
+        </ContentProvider>
       </SettingsProvider>
     </QueryClientProvider>
   );

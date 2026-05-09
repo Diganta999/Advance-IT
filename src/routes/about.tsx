@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Award, Target, Heart, Globe2 } from "lucide-react";
 import { Section, SectionHeader, GlassCard } from "@/components/site/Section";
 import { useSettings } from "@/context/SettingsContext";
+import { useContent } from "@/context/ContentContext";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -40,7 +41,9 @@ const TEAM = [
 
 function AboutPage() {
   const { settings } = useSettings();
+  const { content } = useContent();
   const siteName = settings?.siteName || "NebulaLabs";
+  const team = content?.team?.length ? content.team : TEAM;
   return (
     <>
       <Section className="!pt-10">
@@ -117,11 +120,11 @@ function AboutPage() {
       <Section>
         <SectionHeader eyebrow="Leadership" title={<>Meet the <span className="text-gradient">team</span></>} />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {TEAM.map((m) => (
+          {team.map((m) => (
             <GlassCard key={m.name} className="!p-0 overflow-hidden group">
               <div className="aspect-square w-full overflow-hidden relative">
                 <img 
-                  src={m.img} 
+                  src={m.imageUrl || m.img} 
                   alt={m.name} 
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />

@@ -5,6 +5,7 @@ interface User {
   _id: string;
   name: string;
   email: string;
+  phone?: string;
   role: 'admin' | 'moderator' | 'vvip' | 'vip' | 'user';
   profilePicture?: string;
   token: string;

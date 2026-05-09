@@ -104,6 +104,30 @@ router.get('/inbox', protect, authorizeRoles('admin', 'moderator'), async (req, 
   }
 });
 
+// @desc    Get unread messages count
+// @route   GET /api/messages/unread-count
+// @access  Private (Admin/Moderator)
+router.get('/unread-count', protect, authorizeRoles('admin', 'moderator'), async (req, res) => {
+  try {
+    const count = await Message.countDocuments({ status: 'unread' });
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// @desc    Get all sent replies
+// @route   GET /api/messages/sent
+// @access  Private (Admin/Moderator)
+router.get('/sent', protect, authorizeRoles('admin', 'moderator'), async (req, res) => {
+  try {
+    const messages = await Message.find({ 'replies.0': { $exists: true } }).sort({ updatedAt: -1 });
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // @desc    Update message status
 // @route   PATCH /api/messages/:id
 // @access  Private (Admin/Moderator)
@@ -114,6 +138,22 @@ router.patch('/:id', protect, authorizeRoles('admin', 'moderator'), async (req, 
       message.status = req.body.status || message.status;
       const updatedMessage = await message.save();
       res.json(updatedMessage);
+    } else {
+      res.status(404).json({ message: 'Message not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// @desc    Delete a message permanently
+// @route   DELETE /api/messages/:id
+// @access  Private (Admin/Moderator)
+router.delete('/:id', protect, authorizeRoles('admin', 'moderator'), async (req, res) => {
+  try {
+    const message = await Message.findByIdAndDelete(req.params.id);
+    if (message) {
+      res.json({ message: 'Message deleted successfully' });
     } else {
       res.status(404).json({ message: 'Message not found' });
     }

@@ -6,10 +6,21 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, MoreHorizontal, Loader2, Calendar, User, Building, DollarSign, Reply, Send, CheckCircle2 } from 'lucide-react';
+import { Mail, MoreHorizontal, Loader2, Calendar, Building, DollarSign, Reply, Send, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export const Route = createFileRoute('/admin/messages/inbox')({
   component: InboxPage,
@@ -39,6 +50,7 @@ function InboxPage() {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState('');
   const [isReplying, setIsReplying] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   
   const { user } = useAuth();
 
@@ -109,6 +121,28 @@ function InboxPage() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!user?.token) return;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`http://localhost:5000/api/messages/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      if (res.ok) {
+        setMessages(prev => prev.filter(m => m._id !== id));
+        toast.success('Message deleted permanently');
+      } else {
+        const data = await res.json();
+        throw new Error(data.message);
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete message');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex h-40 items-center justify-center">
@@ -158,9 +192,40 @@ function InboxPage() {
                 >
                   <Reply className="h-4 w-4" /> Reply
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="gap-2 text-red-400 hover:text-red-400 hover:bg-red-400/10"
+                      onClick={(e) => e.stopPropagation()}
+                      disabled={deletingId === msg._id}
+                    >
+                      {deletingId === msg._id 
+                        ? <Loader2 className="h-4 w-4 animate-spin" /> 
+                        : <Trash2 className="h-4 w-4" />}
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="glass border-glass-border">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete this message?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete the message from <strong>{msg.name}</strong>. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-red-500 hover:bg-red-600 text-white"
+                        onClick={() => handleDelete(msg._id)}
+                      >
+                        Delete Permanently
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
